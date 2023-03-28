@@ -86,8 +86,8 @@ const latestPosts = (req, res) => {
 const onePost = async (req, res) => {
     try{
         let results = await Promise.all([
-            Post.findById(req.params.id),
-            Comment.find({user: req.params.id}).populate('user')
+            Post.findById(req.params.id).populate('user', ['_id', 'username', 'first_name', 'last_name']),
+            Comment.find({post: req.params.id}).populate('user', ['_id', 'username', 'first_name', 'last_name'])
         ]);
         res.send({
             success: true,

@@ -31,7 +31,7 @@ const getUsers = (req, res) => {
 const oneUser = async (req, res) => {
     try{
         let results = await Promise.all([
-            User.findById(req.params.id),
+            User.findById(req.params.id, ['username', 'first_name', 'last_name']),
             Post.find({user: req.params.id})
         ]);
         res.send({
