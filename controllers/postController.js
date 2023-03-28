@@ -1,4 +1,5 @@
 const Post = require('../models/postModel');
+const Comment = require('../models/commentModel');
 
 const createPost = (req, res) => {
     const newPost = new Post(req.body);
@@ -17,4 +18,88 @@ const createPost = (req, res) => {
     })   
 };
 
-module.exports = {createPost}
+const getPosts = (req, res) => {
+    Post.find()
+    .sort({created_at: -1})
+    .populate('user')
+    .then((result) => {
+
+        // this loop will remove password from user in result to prevent sending unnecessary information to client
+
+        const resultArray = [];
+        result.forEach((element) => {
+            let objectHolder = {
+                _id: element._id,
+                title: element.title,
+                message: element.message,
+                likes: element.likes,
+                user: {
+                    _id: element.user._id,
+                    username: element.user.username
+                }
+            }
+            resultArray.push(objectHolder)
+        })
+        res.send({
+            message: "Success",
+            result: resultArray
+        });
+    })
+    .catch((err) => {
+        return next(err);
+    })
+};
+
+const latestPosts = (req, res) => {
+    Post.find()
+    .sort({created_at: -1})
+    .limit(6)
+    .populate('user')
+    .then((result) => {
+
+        // this loop will remove password from user in result to prevent sending unnecessary information to client
+
+        const resultArray = [];
+        result.forEach((element) => {
+            let objectHolder = {
+                _id: element._id,
+                title: element.title,
+                message: element.message,
+                likes: element.likes,
+                user: {
+                    _id: element.user._id,
+                    username: element.user.username
+                }
+            }
+            resultArray.push(objectHolder)
+        })
+        res.send({
+            message: "Success",
+            result: resultArray
+        });
+    })
+    .catch((err) => {
+        return next(err);
+    })
+};
+
+const onePost = async (req, res) => {
+    try{
+        let results = await Promise.all([
+            Post.findById(req.params.id),
+            Comment.find({user: req.params.id}).populate('user')
+        ]);
+        res.send({
+            success: true,
+            result: results
+        });
+    } catch(error) {
+        res.send({
+            success: false,
+            message: "Post not found."
+        })
+    };
+};
+
+
+module.exports = {createPost, getPosts, latestPosts, onePost}
