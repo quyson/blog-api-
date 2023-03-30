@@ -22,16 +22,9 @@ router.put('/comment/edit/:id', passport.authenticate('jwt', {session: false}), 
 router.delete('/comment/delete', passport.authenticate('jwt', {session: false}), commentController.deleteComment);
 router.put('/comment/like', passport.authenticate('jwt', {session: false}), commentController.likeComment);
 
+router.put('/users/:id', passport.authenticate('jwt', {session: false}), userController.updateUser);
+router.delete('/users/:id', passport.authenticate('jwt', {session: false}), userController.deleteUser);
 
-/*
-router.put( like comment)
-router.put( update user)
-router.put( update comment)
-router.put (update post)
-router.delete( user)
-router. delete(post)
-router. delete(comment )
-*/
 
 
 

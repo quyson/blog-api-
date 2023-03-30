@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const Post = require('../models/postModel');
+const Comment = require('../models/commentModel');
 
 const getUsers = (req, res) => {
     User.find()
@@ -46,4 +47,46 @@ const oneUser = async (req, res) => {
     };
 };
 
-module.exports = {getUsers, oneUser}
+const updateUser = (req, res) => {
+    User.findByIdAndUpdate(req.params.id, req.body, {new: true}).then((result) => {
+        res.status(200).send({
+            success: true,
+            result: result
+        });
+    })
+    .catch((err) => {
+        res.status(400).send({
+            success: false,
+            message: "Unable to update user."
+        });
+    });
+};
+
+const deleteUser = (req, res) => {
+    const messageObj = {}
+    Comment.deleteMany({user: req.params.id}).then((result) => {
+        messageObj.commentMsg = "All related comments deleted!"
+    })
+    .catch((err) => {
+        messageObj.commentMsg = "Unable to delete related comments."
+    });
+    Post.deleteMany({user: req.params.id}).then((result) => {
+        messageObj.postMsg = "All related Posts deleted!"
+    })
+    .catch((err) => {
+        messageObj.postMsg = "Unable to delete related Posts."
+    });
+    User.findByIdAndDelete(req.params.id).then((result) => {
+        messageObj.success = true;
+        messageObj.message = "Successfully Deleted User!";
+        res.status(200).send(messageObj);
+    })
+    .catch((err) => {
+        res.status(401).send({
+            success: false,
+            message: "Unable to Delete User."
+        });
+    });
+};
+
+module.exports = {getUsers, oneUser, deleteUser, updateUser}
