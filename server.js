@@ -19,5 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(cors());
 
+app.use(passport.initialize());
+require('./config/passport');
+
 app.use(apiRouter);
 

@@ -6,29 +6,37 @@ require('dotenv').config();
 const secretOrKey = process.env.secretOrKey;
 
 const signup = (req, res) => {
-	const newUser = new User(req.body);
-	bcrypt.hash(newUser.password, 10, (err, hashedPassword) => {
-		if(err){
-			return err;
-		}
-		newUser.password = hashedPassword;
-		newUser.save()
-		.then((result) => res.send({
-			Success: true,
-			message: "User saved successfully"
-		}))
-		.catch((err) => {
-			console.log(err);
-			res.send({
-				Success: false,
-				message: "User save has failed"
+	User.find({username: req.body.username}).then((result) => {
+		if(result.length > 0){
+			res.status(401).send({
+				success: false,
+				message: "Username taken!"
 			});
-		});
-	});
+		} else {
+			const newUser = new User(req.body);
+			bcrypt.hash(newUser.password, 10, (err, hashedPassword) => {
+				if(err){
+					return err;
+				}
+				newUser.password = hashedPassword;
+				newUser.save()
+				.then((result) => res.send({
+					success: true,
+					message: "User saved successfully"
+				}))
+				.catch((err) => {
+					console.log(err);
+					res.send({
+						success: false,
+						message: "User save has failed"
+					});
+				});
+			});
+		}
+	})
 };
 
 const login = (req, res) => {
-	console.log(req.body);
 	User.findOne({username: req.body.username}).then((result) => {
 		if(!result){
 			res.status(401).send({
