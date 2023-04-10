@@ -1,6 +1,7 @@
 const Comment = require('../models/commentModel');
 
 const createComment = (req, res) => {
+    console.log(req.body);
     const newComment = new Comment(req.body);
     console.log(newComment);
     newComment.save().then((result) => {

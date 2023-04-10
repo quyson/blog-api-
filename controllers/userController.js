@@ -32,12 +32,19 @@ const getUsers = (req, res) => {
 const oneUser = async (req, res) => {
     try{
         let results = await Promise.all([
-            User.findById(req.params.id, ['username', 'first_name', 'last_name']),
+            User.findById(req.params.id, ['username', 'first_name', 'last_name', 'bio']),
             Post.find({user: req.params.id})
         ]);
+        const resultUser = results[0];
+        const resultPost = results[1];
+        console.log(resultUser)
+        console.log(resultPost);
         res.send({
             success: true,
-            result: results
+            resultUser: resultUser,
+            resultPost: resultPost,
+            currentUser: req.user
+
         });
     } catch(error) {
         res.send({
